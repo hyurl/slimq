@@ -1,0 +1,32 @@
+{
+  "name": "simple-mq",
+  "version": "0.1.0",
+  "description": "A simple message queue for javascript project based on MQTT protocol, wrapped in Node.js event handler style.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyurl/simple-mq.git"
+  },
+  "keywords": [
+    "simple-mq",
+    "mqtt"
+  ],
+  "author": "Ayon Lee <i@hyurl.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hyurl/simple-mq/issues"
+  },
+  "homepage": "https://github.com/hyurl/simple-mq#readme",
+  "devDependencies": {
+    "@types/node": "^12.11.7",
+    "mocha": "^6.2.2",
+    "mqtt": "^3.0.0"
+  },
+  "dependencies": {
+    "bsp": "^1.1.0"
+  }
+}
