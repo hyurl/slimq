@@ -22,9 +22,9 @@ declare class SimpleMQ {
     constructor(config: mqtt.IClientOptions & { scope?: string; });
     connect(): Promise<this>;
     disconnect(): Promise<this>;
-    publish(topic: string, data: any): this;
-    subscribe(topic: string, handler: (data: any, packet: mqtt.Packet) => void): this;
-    unsubscribe(topic: string, handler?: (data: any, packet: mqtt.Packet) => void): this;
+    publish(topic: string, data: any, reply?: (data: any) => void): this;
+    subscribe(topic: string, handler: (data: any, reply: (data: any) => void) => void): this;
+    unsubscribe(topic: string, handler?: (data: any, reply: (data: any) => void) => void): this;
 }
 ```
 
@@ -53,19 +53,26 @@ const mq = new SimpleMQ({ /* config */ });
         // ...
     }).subscribe("transmit-file", (file: Buffer) => {
         // ...
+    }).subscribe("send-reply", (text: string, reply) => {
+        reply("You just sent: " + text);
+    });
+
+    mq.publish("greeting", "Hello, World!");
+    mq.publish("transmit-file", fs.readFileSync("some-file.txt", "utf8"));
+    mq.publish("send-reply", "Hello, World!", (text: string) => {
+        console.log(text); // You just sent: Hello, World!
     });
 })();
 ```
 
 ### Browser
 
-In the browser, the **mqtt** and **bsp** package must be explicitly loaded to
-the global scope.
+In the browser, the **mqtt** package must be explicitly loaded to the global
+scope.
 
 ```html
-<script src="mqtt.js"></script>
-<script src="bsp.js"></script>
-<script src="simple-mq.js"></script>
+<script src="https://unpkg.com/mqtt@3.0.0/dist/mqtt.min.js"></script>
+<script src="./bundle/simple-mq.js"></script>
 <script>
 const mq = new SimpleMQ({ /* config */ });
 
@@ -76,6 +83,14 @@ const mq = new SimpleMQ({ /* config */ });
         // ...
     }).subscribe("transmit-file", (file: Buffer) => {
         // ...
+    }).subscribe("send-reply", (text: string, reply) => {
+        reply("You just sent: " + text);
+    });
+
+    mq.publish("greeting", "Hello, World!");
+    mq.publish("transmit-file", fs.readFileSync("some-file.txt", "utf8"));
+    mq.publish("send-reply", "Hello, World!", (text: string) => {
+        console.log(text); // You just sent: Hello, World!
     });
 })();
 </script>

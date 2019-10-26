@@ -7,8 +7,8 @@ export declare class SimpleMQ {
     constructor(config: mqtt.IClientOptions & { scope?: string; });
     connect(): Promise<this>;
     disconnect(): Promise<this>;
-    publish(topic: string, data: any): this;
-    subscribe(topic: string, handler: (data: any, packet: mqtt.Packet) => void): this;
-    unsubscribe(topic: string, handler?: (data: any, packet: mqtt.Packet) => void): this;
+    publish(topic: string, data: any, reply?: (data: any) => void): this;
+    subscribe(topic: string, handler: (data: any, reply: (data: any) => void) => void): this;
+    unsubscribe(topic: string, handler?: (data: any, reply: (data: any) => void) => void): this;
 }
 export default SimpleMQ;

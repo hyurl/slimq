@@ -93,6 +93,20 @@ describe("SimpleMQ", () => {
         mq.publish("send-file", file);
     });
 
+    it("should transfer data and reply to the sender", (done) => {
+        mq.subscribe("send-reply", (text, reply) => {
+            reply(text);
+        });
+        mq.publish("send-reply", "Hello, World!", text => {
+            try {
+                assert.strictEqual(text, "Hello, World!");
+                done();
+            } catch (err) {
+                done(err);
+            }
+        });
+    });
+
     it("should disconnect", async () => {
         await mq.disconnect();
     });

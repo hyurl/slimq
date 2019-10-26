@@ -1,6 +1,9 @@
 /* global mqtt, bsp, window */
 "use strict";
 
+const bsp = require("bsp");
+const sequid = require("sequid").default;
+
 class SimpleMQ {
     /**
      * @param {{[x: string]: any, scope?: string}} config 
@@ -8,6 +11,7 @@ class SimpleMQ {
     constructor(config) {
         this.config = config;
         this.topics = Object.create(null);
+        this.serial = sequid(0, true);
         this.channel = null;
     }
 
@@ -20,26 +24,25 @@ class SimpleMQ {
                 global["mqtt"] = require("mqtt");
             }
 
-            if (typeof bsp === "undefined") {
-                global["bsp"] = require("bsp");
-            }
-
             this.channel = mqtt.connect(this.config);
             this.channel.on("connect", () => {
-                this.channel.on("message", (topic, payload, packet) => {
+                this.channel.on("message", (topic, payload) => {
                     let handlers = this.topics[topic];
 
                     if (handlers && handlers.size > 0) {
-                        let data;
+                        let data, replyId;
+                        let reply = (data) => {
+                            replyId && this.publish(replyId, data);
+                        };
 
                         try {
-                            data = bsp.decode(payload);
+                            [data, replyId] = bsp.decode(payload, []);
                         } catch (e) {
                             data = payload;
                         }
 
                         for (let handler of handlers.values()) {
-                            handler.call(void 0, data, packet);
+                            handler.call(void 0, data, reply);
                         }
                     }
                 });
@@ -62,17 +65,29 @@ class SimpleMQ {
 
     /**
      * @param {string} topic 
-     * @param {any} data 
+     * @param {any} data
+     * @param {(data: any) => void} reply
      */
-    publish(topic, data) {
+    publish(topic, data, reply = null) {
+        let replyId = `${topic}@${this.serial.next().value}`;
         topic = this.resolve(topic);
-        this.channel.publish(topic, bsp.encode(data));
+
+        if (reply) {
+            this.subscribe(replyId, (data) => {
+                this.unsubscribe(replyId);
+                reply(data);
+            });
+            this.channel.publish(topic, bsp.encode(data, replyId));
+        } else {
+            this.channel.publish(topic, bsp.encode(data));
+        }
+
         return this;
     }
 
     /**
      * @param {string} topic 
-     * @param {(data: any) => void} handler 
+     * @param {(data: any, reply: (data: any) => void) => void} handler 
      */
     subscribe(topic, handler) {
         topic = this.resolve(topic);
@@ -89,7 +104,7 @@ class SimpleMQ {
 
     /**
      * @param {string} topic 
-     * @param {(data: any) => void} handler 
+     * @param {(data: any, reply: (data: any) => void) => void} handler 
      */
     unsubscribe(topic, handler) {
         topic = this.resolve(topic);
@@ -117,9 +132,5 @@ class SimpleMQ {
     }
 }
 
-if (typeof exports === "object") {
-    exports.SimpleMQ = SimpleMQ;
-    exports.default = SimpleMQ;
-} else if (typeof window === "object") {
-    window.SimpleMQ = SimpleMQ;
-}
+exports.SimpleMQ = SimpleMQ;
+exports.default = SimpleMQ;
