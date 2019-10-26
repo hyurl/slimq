@@ -45,11 +45,15 @@ import SimpleMQ from "simple-mq";
 
 const mq = new SimpleMQ({ /* config */ });
 
-mq.subscribe("greeting", (text: string) => {
-    // ...
-}).subscribe("transmit-file", (file: Buffer) => {
-    // ...
-});
+(async () => {
+    await mq.connect();
+
+    mq.subscribe("greeting", (text: string) => {
+        // ...
+    }).subscribe("transmit-file", (file: Buffer) => {
+        // ...
+    });
+})();
 ```
 
 ### Browser
@@ -64,11 +68,15 @@ the global scope.
 <script>
 const mq = new SimpleMQ({ /* config */ });
 
-mq.subscribe("greeting", (text: string) => {
-    // ...
-}).subscribe("transmit-file", (file: Uint8Array) => {
-    // ...
-});
+(async () => {
+    await mq.connect();
+
+    mq.subscribe("greeting", (text: string) => {
+        // ...
+    }).subscribe("transmit-file", (file: Buffer) => {
+        // ...
+    });
+})();
 </script>
 ```
 
