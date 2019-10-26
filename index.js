@@ -8,6 +8,7 @@ class SimpleMQ {
     constructor(config) {
         this.config = config;
         this.topics = Object.create(null);
+        this.channel = null;
     }
 
     /**
