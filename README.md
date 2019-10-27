@@ -1,4 +1,4 @@
-# Slim Messagq Queue
+# Slim Message Queue
 
 Instead of using MQTT protocol directly, this module uses
 [bsp](https://github.com/hyurl/bsp) package to encode and decode data in order 
