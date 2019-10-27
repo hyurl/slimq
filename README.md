@@ -1,4 +1,4 @@
-# SimpleMQ
+# Slim Messagq Queue
 
 Instead of using MQTT protocol directly, this module uses
 [bsp](https://github.com/hyurl/bsp) package to encode and decode data in order 
@@ -10,12 +10,12 @@ documentation.
 
 **WARN**: Unlike traditional MQTT protocol, this module also uses `.` instead of
 `/` to construct namespaces of the topic, for a more universal experience when
-working with other protocols. 
+working with other protocols.
 
 ## API
 
 ```ts
-declare class SimpleMQ {
+declare class SliMQ {
     protected config: mqtt.IClientOptions & { scope?: string; };
     protected topics: { [topic: string]: Set<(data: any, packet: mqtt.Packet) => void> };
     protected channel: mqtt.Client;
@@ -39,12 +39,12 @@ In order to use this module, some prerequisites must be proceed.
 
 First install [mqtt](https://github.com/mqttjs/MQTT.js#readme) and
 [bsp](https://github.com/hyurl/bsp) packages in the project, they will be
-auto-imported by SimpleMQ itself.
+auto-imported by SliMQ itself.
 
 ```ts
-import SimpleMQ from "simple-mq";
+import SliMQ from "slimq";
 
-const mq = new SimpleMQ({ /* config */ });
+const mq = new SliMQ({ /* config */ });
 
 (async () => {
     await mq.connect();
@@ -72,9 +72,9 @@ scope.
 
 ```html
 <script src="https://unpkg.com/mqtt@3.0.0/dist/mqtt.min.js"></script>
-<script src="./bundle/simple-mq.js"></script>
+<script src="./bundle/slimq.js"></script>
 <script>
-const mq = new SimpleMQ({ /* config */ });
+const mq = new SliMQ({ /* config */ });
 
 (async () => {
     await mq.connect();

@@ -1,11 +1,11 @@
 /* global describe, it */
 
-const SimpleMQ = require(".").default;
+const SliMQ = require(".").default;
 const assert = require("assert");
 const fs = require("fs");
 
-/** @type {SimpleMQ} */
-let mq = new SimpleMQ({
+/** @type {SliMQ} */
+let mq = new SliMQ({
     host: "mq.skscore.com",
     port: 9012,
     username: "test",
@@ -13,7 +13,7 @@ let mq = new SimpleMQ({
     scope: "test"
 });
 
-describe("SimpleMQ", () => {
+describe("SliMQ", () => {
     it("should connect to the message broker", async () => {
         await mq.connect();
         assert(mq.channel.connected);

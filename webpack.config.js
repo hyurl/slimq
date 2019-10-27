@@ -9,7 +9,7 @@ module.exports = {
     },
     output: {
         path: __dirname + "/bundle",
-        filename: "simple-mq.js",
+        filename: "slimq.js",
         libraryTarget: "umd",
         globalObject: "this",
     },

@@ -1,5 +1,5 @@
 {
-  "name": "simple-mq",
+  "name": "slimq",
   "version": "0.1.0",
   "description": "A simple message queue for javascript project based on MQTT protocol, wrapped in Node.js event handler style.",
   "main": "index.js",
@@ -9,18 +9,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hyurl/simple-mq.git"
+    "url": "git+https://github.com/hyurl/slimq.git"
   },
   "keywords": [
-    "simple-mq",
-    "mqtt"
+    "slim",
+    "mq",
+    "mqtt",
+    "message queue"
   ],
   "author": "Ayon Lee <i@hyurl.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hyurl/simple-mq/issues"
+    "url": "https://github.com/hyurl/slimq/issues"
   },
-  "homepage": "https://github.com/hyurl/simple-mq#readme",
+  "homepage": "https://github.com/hyurl/slimq#readme",
   "devDependencies": {
     "@types/node": "^12.11.7",
     "mocha": "^6.2.2",

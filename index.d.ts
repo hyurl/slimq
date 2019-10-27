@@ -1,6 +1,6 @@
 import * as mqtt from "mqtt";
 
-export declare class SimpleMQ {
+export declare class SliMQ {
     protected config: mqtt.IClientOptions & { scope?: string; };
     protected topics: { [topic: string]: Set<(data: any, packet: mqtt.Packet) => void> };
     protected channel: mqtt.Client;
@@ -11,4 +11,4 @@ export declare class SimpleMQ {
     subscribe(topic: string, handler: (data: any, reply: (data: any) => void) => void): this;
     unsubscribe(topic: string, handler?: (data: any, reply: (data: any) => void) => void): this;
 }
-export default SimpleMQ;
+export default SliMQ;

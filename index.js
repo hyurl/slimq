@@ -4,7 +4,7 @@
 const bsp = require("bsp");
 const sequid = require("sequid").default;
 
-class SimpleMQ {
+class SliMQ {
     /**
      * @param {{[x: string]: any, scope?: string}} config 
      */
@@ -132,5 +132,5 @@ class SimpleMQ {
     }
 }
 
-exports.SimpleMQ = SimpleMQ;
-exports.default = SimpleMQ;
+exports.SliMQ = SliMQ;
+exports.default = SliMQ;
