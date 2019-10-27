@@ -69,7 +69,7 @@ class SimpleMQ {
      * @param {(data: any) => void} reply
      */
     publish(topic, data, reply = null) {
-        let replyId = `${topic}@${this.serial.next().value}`;
+        let replyId = `${topic}$${this.serial.next().value}`;
         topic = this.resolve(topic);
 
         if (reply) {
