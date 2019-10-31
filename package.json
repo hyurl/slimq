@@ -1,6 +1,6 @@
 {
   "name": "slimq",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A simple message queue for javascript project based on MQTT protocol, wrapped in Node.js event handler style.",
   "main": "index.js",
   "types": "index.d.ts",
@@ -24,12 +24,12 @@
   },
   "homepage": "https://github.com/hyurl/slimq#readme",
   "devDependencies": {
-    "@types/node": "^12.11.7",
+    "@types/node": "^12.12.3",
     "mocha": "^6.2.2",
     "mqtt": "^3.0.0"
   },
   "dependencies": {
-    "bsp": "^1.1.0",
+    "bsp": "^1.1.1",
     "sequid": "^1.0.1"
   }
 }
