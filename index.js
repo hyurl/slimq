@@ -69,11 +69,12 @@ class SliMQ {
      * @param {(data: any) => void} reply
      */
     publish(topic, data, reply = null) {
-        let { clientId } = this.channel.options;
-        let replyId = `${topic}@${clientId}$${this.serial.next().value}`;
         topic = this.resolve(topic);
 
         if (reply) {
+            let { clientId } = this.channel.options;
+            let replyId = `${topic}@${clientId}$${this.serial.next().value}`;
+
             this.subscribe(replyId, (data) => {
                 this.unsubscribe(replyId);
                 reply(data);

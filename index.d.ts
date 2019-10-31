@@ -7,8 +7,8 @@ export declare class SliMQ {
     constructor(config: mqtt.IClientOptions & { scope?: string; });
     connect(): Promise<this>;
     disconnect(): Promise<this>;
-    publish(topic: string, data: any, reply?: (data: any) => void): this;
-    subscribe(topic: string, handler: (data: any, reply: (data: any) => void) => void): this;
-    unsubscribe(topic: string, handler?: (data: any, reply: (data: any) => void) => void): this;
+    publish<T = any, R = any>(topic: string, data: T, reply?: (data: R) => void): this;
+    subscribe<T = any, R = any>(topic: string, handler: (data: T, reply: (data: R) => void) => void): this;
+    unsubscribe<T = any, R = any>(topic: string, handler?: (data: T, reply: (data: R) => void) => void): this;
 }
 export default SliMQ;
