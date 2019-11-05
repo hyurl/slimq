@@ -10,6 +10,7 @@ class SliMQ {
      */
     constructor(config) {
         this.config = config;
+        /** @type { {[topic: string]: Set<Function>} } */
         this.topics = Object.create(null);
         this.serial = sequid(0, true);
         this.channel = null;
@@ -93,9 +94,9 @@ class SliMQ {
      */
     subscribe(topic, handler) {
         topic = this.resolve(topic);
-        this.channel.subscribe(topic);
 
         if (!this.topics[topic]) {
+            this.channel.subscribe(topic);
             this.topics[topic] = new Set([handler]);
         } else {
             this.topics[topic].add(handler);
@@ -111,14 +112,13 @@ class SliMQ {
     unsubscribe(topic, handler) {
         topic = this.resolve(topic);
 
-        if (handler) {
-            let handlers = this.topics[topic];
-            if (handlers && handlers.size > 0) {
-                handlers.delete(handler);
+        if (this.topics[topic]) {
+            if (handler) {
+                this.topics[topic].delete(handler);
+            } else {
+                this.channel.unsubscribe(topic);
+                delete this.topics[topic];
             }
-        } else {
-            this.channel.unsubscribe(topic);
-            delete this.topics[topic];
         }
 
         return this;
