@@ -14,7 +14,9 @@ export declare class SliMQ {
         dup?: boolean;
     }, reply?: (data: R) => void): this;
     subscribe<T = any, R = any>(topic: string, handler: (data: T, reply: (data: R) => void) => void): this;
-    subscribe<T = any, R = any>(topic: string, options: { qos: 0 | 1 | 2 }, handler: (data: T, reply: (data: R) => void) => void): this;
+    subscribe<T = any, R = any>(topic: string, options: {
+        qos: 0 | 1 | 2
+    }, handler: (data: T, reply: (data: R) => void) => void): this;
     unsubscribe<T = any, R = any>(topic: string, handler?: (data: T, reply: (data: R) => void) => void): this;
 }
 export default SliMQ;

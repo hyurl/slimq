@@ -9,7 +9,7 @@ must implement the encode and decode functions according to **bsp**
 documentation.
 
 **WARN**: Unlike traditional MQTT protocol, this module also uses `.` instead of
-`/` to construct namespaces of the topic, for a more universal experience when
+`/` to construct namespace of the topic, for a more universal experience when
 working with other protocols.
 
 ## API
@@ -22,9 +22,17 @@ declare class SliMQ {
     constructor(config: mqtt.IClientOptions & { scope?: string; });
     connect(): Promise<this>;
     disconnect(): Promise<this>;
-    publish(topic: string, data: any, reply?: (data: any) => void): this;
-    subscribe(topic: string, handler: (data: any, reply: (data: any) => void) => void): this;
-    unsubscribe(topic: string, handler?: (data: any, reply: (data: any) => void) => void): this;
+    publish<T = any, R = any>(topic: string, data: T, reply?: (data: R) => void): this;
+    publish<T = any, R = any>(topic: string, data: T, options: {
+        qos?: 0 | 1 | 2;
+        retain?: boolean;
+        dup?: boolean;
+    }, reply?: (data: R) => void): this;
+    subscribe<T = any, R = any>(topic: string, handler: (data: T, reply: (data: R) => void) => void): this;
+    subscribe<T = any, R = any>(topic: string, options: {
+        qos: 0 | 1 | 2
+    }, handler: (data: T, reply: (data: R) => void) => void): this;
+    unsubscribe<T = any, R = any>(topic: string, handler?: (data: T, reply: (data: R) => void) => void): this;
 }
 ```
 

@@ -6,14 +6,15 @@ const fs = require("fs");
 
 /** @type {SliMQ} */
 let mq = new SliMQ({
-    host: "mq.skscore.com",
-    port: 9012,
-    username: "test",
-    password: "12345678",
+    protocol: "mqtt",
+    host: "test.mosquitto.org",
+    port: 1883,
     scope: "test"
 });
 
-describe("SliMQ", () => {
+describe("SliMQ", function () {
+    this.timeout(5000);
+
     it("should connect to the message broker", async () => {
         await mq.connect();
         assert(mq.channel.connected);
