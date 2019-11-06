@@ -26,31 +26,29 @@ class SliMQ {
             }
 
             this.channel = mqtt.connect(this.config);
-            this.channel.on("connect", () => {
-                this.channel.on("message", (topic, payload) => {
-                    let handlers = this.topics[topic];
-
-                    if (handlers && handlers.size > 0) {
-                        let data, replyId;
-                        let reply = (data) => {
-                            replyId && this.publish(replyId, data);
-                        };
-
-                        try {
-                            [data, replyId] = bsp.decode(payload, []);
-                        } catch (e) {
-                            data = payload;
-                        }
-
-                        for (let handler of handlers.values()) {
-                            handler.call(void 0, data, reply);
-                        }
-                    }
-                });
-
+            this.channel.once("connect", () => {
                 resolve(this);
-            }).on("error", (err) => {
+            }).once("error", (err) => {
                 reject(err);
+            }).on("message", (topic, payload) => {
+                let handlers = this.topics[topic];
+
+                if (handlers && handlers.size > 0) {
+                    let data, replyId;
+                    let reply = (data) => {
+                        replyId && this.publish(replyId, data);
+                    };
+
+                    try {
+                        [data, replyId] = bsp.decode(payload, []);
+                    } catch (e) {
+                        data = payload;
+                    }
+
+                    for (let handler of handlers.values()) {
+                        handler.call(void 0, data, reply);
+                    }
+                }
             });
         });
     }
@@ -67,10 +65,16 @@ class SliMQ {
     /**
      * @param {string} topic 
      * @param {any} data
+     * @param {{ qos?: 0 | 1 | 2, retain?: boolean, dup?: boolean }} options
      * @param {(data: any) => void} reply
      */
-    publish(topic, data, reply = null) {
+    publish(topic, data, options = null, reply = null) {
         topic = this.resolve(topic);
+
+        if (typeof options === "function") {
+            reply = options;
+            options = null;
+        }
 
         if (reply) {
             let { clientId } = this.channel.options;
@@ -80,9 +84,9 @@ class SliMQ {
                 this.unsubscribe(replyId);
                 reply(data);
             });
-            this.channel.publish(topic, bsp.encode(data, replyId));
+            this.channel.publish(topic, bsp.encode(data, replyId), options);
         } else {
-            this.channel.publish(topic, bsp.encode(data));
+            this.channel.publish(topic, bsp.encode(data), options);
         }
 
         return this;
@@ -90,13 +94,19 @@ class SliMQ {
 
     /**
      * @param {string} topic 
+     * @param {{ qos: 0 | 1 | 2 }} [options]
      * @param {(data: any, reply: (data: any) => void) => void} handler 
      */
-    subscribe(topic, handler) {
+    subscribe(topic, options, handler) {
         topic = this.resolve(topic);
 
+        if (typeof options === "function") {
+            handler = options;
+            options = null;
+        }
+
         if (!this.topics[topic]) {
-            this.channel.subscribe(topic);
+            this.channel.subscribe(topic, options);
             this.topics[topic] = new Set([handler]);
         } else {
             this.topics[topic].add(handler);
@@ -109,7 +119,7 @@ class SliMQ {
      * @param {string} topic 
      * @param {(data: any, reply: (data: any) => void) => void} handler 
      */
-    unsubscribe(topic, handler) {
+    unsubscribe(topic, handler = null) {
         topic = this.resolve(topic);
 
         if (this.topics[topic]) {
