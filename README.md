@@ -17,7 +17,7 @@ working with other protocols.
 ```ts
 declare class SliMQ {
     protected config: mqtt.IClientOptions & { scope?: string; };
-    protected topics: { [topic: string]: Set<(data: any, packet: mqtt.Packet) => void> };
+    protected topics: { [topic: string]: (data: any) => void };
     protected channel: mqtt.Client;
     constructor(config: mqtt.IClientOptions & { scope?: string; });
     connect(): Promise<this>;
@@ -32,12 +32,15 @@ declare class SliMQ {
     subscribe<T = any, R = any>(topic: string, options: {
         qos: 0 | 1 | 2
     }, handler: (data: T, reply: (data: R) => void) => void): this;
-    unsubscribe<T = any, R = any>(topic: string, handler?: (data: T, reply: (data: R) => void) => void): this;
+    unsubscribe(topic: string): this;
 }
 ```
 
-**NOTICE**: If `scope` is provided in the config, it will be used as prefix to
-every topic that the current instance binds and sends.
+**NOTE**:
+1. If `scope` is provided in the config, it will be used as prefix to every
+    topic that the current instance binds and sends.
+2. If calls subscribe on the same topic multiple times, the later ones will
+    erase the former ones.
 
 ## Usage
 
@@ -57,17 +60,18 @@ const mq = new SliMQ({ /* config */ });
 (async () => {
     await mq.connect();
 
-    mq.subscribe("greeting", (text: string) => {
-        // ...
-    }).subscribe("transmit-file", (file: Buffer) => {
-        // ...
-    }).subscribe("send-reply", (text: string, reply) => {
+    mq.subscribe<string>("greeting", (text) => {
+        // `text` would be a string.
+    }).subscribe<Buffer>("transmit-file", (file) => {
+        // `file` would be a buffer.
+    }).subscribe<string, string>("send-reply", (text, reply) => {
+        // `text` would be a string, and `reply` must take a string argument.
         reply("You just sent: " + text);
     });
 
     mq.publish("greeting", "Hello, World!");
     mq.publish("transmit-file", fs.readFileSync("some-file.txt", "utf8"));
-    mq.publish("send-reply", "Hello, World!", (text: string) => {
+    mq.publish<string, string>("send-reply", "Hello, World!", (text) => {
         console.log(text); // You just sent: Hello, World!
     });
 })();
@@ -87,18 +91,13 @@ const mq = new SliMQ({ /* config */ });
 (async () => {
     await mq.connect();
 
-    mq.subscribe("greeting", (text: string) => {
-        // ...
-    }).subscribe("transmit-file", (file: Buffer) => {
-        // ...
-    }).subscribe("send-reply", (text: string, reply) => {
+    mq.subscribe<string>("greeting", (text) => {
+        // `text` would be a string.
+    }).subscribe<Uint8Array>("transmit-file", (file) => {
+        // `file` would be a Uint8Array instance.
+    }).subscribe<string, string>("send-reply", (text, reply) => {
+        // `text` would be a string, and `reply` must take a string argument.
         reply("You just sent: " + text);
-    });
-
-    mq.publish("greeting", "Hello, World!");
-    mq.publish("transmit-file", fs.readFileSync("some-file.txt", "utf8"));
-    mq.publish("send-reply", "Hello, World!", (text: string) => {
-        console.log(text); // You just sent: Hello, World!
     });
 })();
 </script>

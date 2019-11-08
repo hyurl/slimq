@@ -10,7 +10,7 @@ class SliMQ {
      */
     constructor(config) {
         this.config = config;
-        /** @type { {[topic: string]: Set<Function>} } */
+        /** @type {{[topic: string]: (data: any, reply: Function) => void}} */
         this.topics = Object.create(null);
         this.serial = sequid(0, true);
         this.channel = null;
@@ -31,9 +31,9 @@ class SliMQ {
             }).once("error", (err) => {
                 reject(err);
             }).on("message", (topic, payload) => {
-                let handlers = this.topics[topic];
+                let handle = this.topics[topic];
 
-                if (handlers && handlers.size > 0) {
+                if (handle) {
                     let data, replyId;
                     let reply = (data) => {
                         replyId && this.publish(replyId, data);
@@ -45,9 +45,7 @@ class SliMQ {
                         data = payload;
                     }
 
-                    for (let handler of handlers.values()) {
-                        handler.call(void 0, data, reply);
-                    }
+                    handle(data, reply);
                 }
             });
         });
@@ -105,30 +103,21 @@ class SliMQ {
             options = null;
         }
 
-        if (!this.topics[topic]) {
-            this.channel.subscribe(topic, options);
-            this.topics[topic] = new Set([handler]);
-        } else {
-            this.topics[topic].add(handler);
-        }
+        this.channel.subscribe(topic, options);
+        this.topics[topic] = handler;
 
         return this;
     }
 
     /**
      * @param {string} topic 
-     * @param {(data: any, reply: (data: any) => void) => void} handler 
      */
-    unsubscribe(topic, handler = null) {
+    unsubscribe(topic) {
         topic = this.resolve(topic);
 
         if (this.topics[topic]) {
-            if (handler) {
-                this.topics[topic].delete(handler);
-            } else {
-                this.channel.unsubscribe(topic);
-                delete this.topics[topic];
-            }
+            this.channel.unsubscribe(topic);
+            delete this.topics[topic];
         }
 
         return this;
@@ -139,7 +128,11 @@ class SliMQ {
      */
     resolve(topic) {
         topic = topic.replace(/\./g, "/");
-        this.config.scope && (topic = this.config.scope + "/" + topic);
+
+        if (this.config.scope && !topic.startsWith(this.config.scope + "/")) {
+            topic = this.config.scope + "/" + topic;
+        }
+
         return topic;
     }
 }
