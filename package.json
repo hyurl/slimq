@@ -1,7 +1,7 @@
 {
   "name": "slimq",
   "version": "0.1.0",
-  "description": "A simple message queue for javascript project based on MQTT protocol, wrapped in Node.js event handler style.",
+  "description": "A simple message queue for based on MQTT protocol.",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
