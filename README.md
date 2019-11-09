@@ -51,7 +51,12 @@ declare class SliMQ {
 ```ts
 import SliMQ from "slimq";
 
-const mq = new SliMQ({ /* config */ });
+const mq = new SliMQ({
+    protocol: "mqtt",
+    host: "test.mosquitto.org",
+    port: 1883,
+    scope: "test"
+});
 
 (async () => {
     await mq.connect();
