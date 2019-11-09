@@ -1,11 +1,11 @@
 # Slim Message Queue
 
 Instead of using MQTT protocol directly, this module uses
-[bsp](https://github.com/hyurl/bsp) package to encode and decode data in order 
+[BSP](https://github.com/hyurl/bsp) package to encode and decode data in order 
 to transfer arbitrary types of data.
 
 Any other program intend to connect and transmit data along with this module
-must implement the encode and decode functions according to **bsp**
+must implement the encode and decode functions according to **BSP**
 documentation.
 
 **WARN**: Unlike traditional MQTT protocol, this module also uses `.` instead of
@@ -37,20 +37,16 @@ declare class SliMQ {
 ```
 
 **NOTE**:
-1. If `scope` is provided in the config, it will be used as prefix to every
+1. [mqtt](https://github.com/mqttjs/MQTT.js) package must be installed before
+    using this module.
+2. If `scope` is provided in the config, it will be used as prefix to every
     topic that the current instance binds and sends.
-2. If calls subscribe on the same topic multiple times, the later ones will
+3. If calls subscribe on the same topic multiple times, the later ones will
     erase the former ones.
 
-## Usage
-
-In order to use this module, some prerequisites must be proceed.
+## Example
 
 ### Node.js
-
-First install [mqtt](https://github.com/mqttjs/MQTT.js#readme) and
-[bsp](https://github.com/hyurl/bsp) packages in the project, they will be
-auto-imported by SliMQ itself.
 
 ```ts
 import SliMQ from "slimq";
@@ -102,8 +98,3 @@ const mq = new SliMQ({ /* config */ });
 })();
 </script>
 ```
-
-## Tips
-
-It's always a good practice to split large files into chunks and send them
-accordingly, then merge them in the receiver side.
