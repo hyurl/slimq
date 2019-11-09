@@ -1,7 +1,7 @@
 # Slim Message Queue
 
 Instead of using MQTT protocol directly, this module uses
-[BSP](https://github.com/hyurl/bsp) package to encode and decode data in order 
+[BSP](https://github.com/hyurl/bsp) protocol to encode and decode data in order 
 to transfer arbitrary types of data.
 
 Any other program intend to connect and transmit data along with this module
